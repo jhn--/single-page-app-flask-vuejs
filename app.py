@@ -1,6 +1,6 @@
 # https://testdriven.io/blog/developing-a-single-page-app-with-flask-and-vuejs/
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 
@@ -44,12 +44,28 @@ BOOKS = [
 def ping_pong():
     return jsonify('pong!')
 
-@app.route('/books', methods=['GET'])
+@app.route('/books', methods=['GET', 'POST'])
 def all_books():
-    return jsonify({
-        'status': 'success',
-        'books': BOOKS
-    })
+    '''
+    TODO:
+        What if the title already exists? 
+        Or what if a title has more than one author? 
+        Check your understanding by handling these cases. 
+        Also, how would you handle an invalid payload where the title, 
+        author, and/or read is missing?
+    '''
+    response_object = {'status': 'success'}
+    if request.method == 'POST':
+        post_data = request.get_json()
+        BOOKS.append({
+            'title': post_data.get('title'),
+            'author': post_data.get('author'),
+            'read': post_data.get('read')
+        })
+        response_object['message'] = 'Book added!' # append ['message'] to response_object
+    else:
+        response_object['books'] = BOOKS # append ['books'] to response_object
+    return jsonify(response_object)
 
 
 if __name__ == '__main__':
