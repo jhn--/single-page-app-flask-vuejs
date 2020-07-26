@@ -1,9 +1,13 @@
+// Can you think of any potential errors on the client or server? 
+// Handle these on your own to improve user experience.
+
 <template>
     <div class="container">
         <div class="row">
             <div class="col-sm-10">
                 <h1>Books</h1>
                 <hr><br><br>
+                <alert :message='message' v-if='showMessage'></alert> <!-- alerts -->
                 <button type="button" class="btn btn-success btn-sm" v-b-modal.book-modal>
                   Add Book
                 </button>
@@ -81,6 +85,7 @@
 
 <script>
 import axios from 'axios';
+import Alert from './Alert.vue';
 
 export default {
   data() {
@@ -91,7 +96,12 @@ export default {
         author: '',
         read: [],
       },
+      message: '',
+      showMessage: false,
     };
+  },
+  components: {
+    alert: Alert,
   },
   methods: {
     getBooks() {
@@ -101,6 +111,7 @@ export default {
           this.books = res.data.books;
         })
         .catch((error) => {
+          // eslint-disable-next-line
           console.error(error);
         });
     },
@@ -109,8 +120,11 @@ export default {
       axios.post(path, payload)
         .then(() => {
           this.getBooks();
+          this.message = 'Book added.';
+          this.showMessage = true;
         })
         .catch((error) => {
+          // eslint-disable-next-line
           console.log(error);
           this.getBooks();
         });
