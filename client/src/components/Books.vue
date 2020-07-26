@@ -1,8 +1,13 @@
 // Can you think of any potential errors on the client or server?
 // Handle these on your own to improve user experience.
 
+// UPDATE
 // Challenge: Instead of using a new modal, try using the same modal for
 // handling both POST and PUT requests.
+
+// DELETE
+// Instead of deleting on the button click, add a confirmation alert.
+// Display a message saying, like "No books! Please add one.", when no books are present.
 
 <template>
     <div class="container">
@@ -41,10 +46,14 @@
                                     </button> -->
                                     <button type="button" class="btn btn-warning btn-sm"
                                     v-b-modal.book-update-modal @click="editBook(book)">
-                                        Update
+                                      Update
                                     </button>
-                                    <button type="button" class="btn btn-danger btn-sm">
+                                    <!-- <button type="button" class="btn btn-danger btn-sm">
                                         Delete
+                                    </button> -->
+                                    <button type="button" class="btn btn-danger btn-sm"
+                                    @click="onDeleteBook(book)">
+                                      Delete
                                     </button>
                                 </div>
                             </td>
@@ -195,6 +204,23 @@ export default {
     },
     editBook(book) {
       this.editForm = book;
+    },
+    removeBook(bookID) {
+      const path = `http://localhost:5000/books/${bookID}`;
+      axios.delete(path)
+        .then(() => {
+          this.getBooks();
+          this.message = 'Book removed.';
+          this.showMessage = true;
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+          this.getBooks();
+        });
+    },
+    onDeleteBook(book) {
+      this.removeBook(book.id);
     },
     initForm() {
       this.addBookForm.title = '';
