@@ -176,14 +176,15 @@ export default {
     addBook(payload) {
       const path = 'http://localhost:5000/books';
       axios.post(path, payload)
-        .then(() => {
-          this.getBooks();
-          this.message = 'Book added.';
+        .then((res) => {
+          // this.message = 'Book added.';
+          this.message = res.data.message; // alert user
           this.showMessage = true;
+          this.getBooks();
         })
         .catch((error) => {
           // eslint-disable-next-line
-          console.log(error);
+          console.error(error);
           this.getBooks();
         });
     },
@@ -191,10 +192,10 @@ export default {
       // wire up AJAX request
       const path = `http://localhost:5000/books/${bookID}`;
       axios.put(path, payload)
-        .then(() => {
-          this.getBooks();
-          this.message = 'Book updated.'; // alert user
+        .then((res) => {
+          this.message = res.data.message; // alert user
           this.showMessage = true; // alert user
+          this.getBooks();
         })
         .catch((error) => {
           // eslint-disable-next-line
@@ -208,10 +209,11 @@ export default {
     removeBook(bookID) {
       const path = `http://localhost:5000/books/${bookID}`;
       axios.delete(path)
-        .then(() => {
-          this.getBooks();
-          this.message = 'Book removed.';
+        .then((res) => {
+          // this.message = 'Book removed.';
+          this.message = res.data.message; // alert user
           this.showMessage = true;
+          this.getBooks();
         })
         .catch((error) => {
           // eslint-disable-next-line

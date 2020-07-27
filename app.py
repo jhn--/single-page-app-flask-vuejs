@@ -52,7 +52,7 @@ def ping_pong():
 def all_books():
     '''
     TODO:
-        What if the title already exists? 
+        What if the title already exists? (done)
         Or what if a title has more than one author? 
         Check your understanding by handling these cases. 
         Also, how would you handle an invalid payload where the title, 
@@ -61,13 +61,18 @@ def all_books():
     response_object = {'status': 'success'}
     if request.method == 'POST':
         post_data = request.get_json()
-        BOOKS.append({
-            'id': uuid.uuid4().hex,
-            'title': post_data.get('title'),
-            'author': post_data.get('author'),
-            'read': post_data.get('read')
-        })
-        response_object['message'] = 'Book added!' # append ['message'] to response_object
+        if len([book for book in BOOKS if book['title'] == post_data.get('title')]) == 0:
+            # if there's no such book title in the list
+            BOOKS.append({
+                'id': uuid.uuid4().hex,
+                'title': post_data.get('title'),
+                'author': post_data.get('author'),
+                'read': post_data.get('read')
+            })
+            response_object['message'] = 'Book added!' # append ['message'] to response_object
+        else:
+            response_object['status'] = 'fail'
+            response_object['message'] = 'Book already in list.'
     else:
         response_object['books'] = BOOKS # append ['books'] to response_object
     return jsonify(response_object)
