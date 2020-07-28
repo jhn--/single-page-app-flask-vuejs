@@ -27,21 +27,28 @@ BOOKS = [
         'id': uuid.uuid4().hex,
         'title': 'On the Road',
         'author': 'Jack Kerouac',
-        'read': True
+        'read': "true"
+        # 'read': True
     },
     {
         'id': uuid.uuid4().hex,
         'title': 'Harry Potther and the Philosopher\'s Stone',
         'author': 'J. K. Rowling',
-        'read': False
+        'read': "false"
+        # 'read': False
     },
     {
         'id': uuid.uuid4().hex,
         'title': 'Green Eggs and Ham',
         'author': 'Dr. Seuss',
-        'read': True
+        'read': "true"
+        # 'read': True
     }
 ]
+
+KEYS = {'title':'', 'author':'', 'read':''}
+
+TF = {"true": True, "false": False}
 
 # sanity check route
 @app.route('/ping', methods=['GET'])
@@ -53,7 +60,7 @@ def all_books():
     '''
     TODO:
         What if the title already exists? (done)
-        Or what if a title has more than one author? (do i create a ... list?)
+        Or what if a title has more than one author? (do i create a ... list? but how will i create my ui??)
         Check your understanding by handling these cases. 
         Also, how would you handle an invalid payload where the title, 
         author, and/or read is missing? (done)
@@ -61,13 +68,10 @@ def all_books():
     response_object = {'status': 'success'}
     if request.method == 'POST':
         post_data = request.get_json()
-        if not post_data.get('title') or not post_data.get('author') or not post_data.get('read'):
-            response_object['status'] = 'fail'
-            response_object['message'] = 'Missing fields.'
-
+        response_object = check_fields(post_data) # check fields, overwrites value of original response_object
+        if response_object['status'] == 'fail':
             return jsonify(response_object)
-        if len([book for book in BOOKS if book['title'] == post_data.get('title')]) == 0:
-            # if there's no such book title in the list
+        else:
             BOOKS.append({
                 'id': uuid.uuid4().hex,
                 'title': post_data.get('title'),
@@ -75,9 +79,6 @@ def all_books():
                 'read': post_data.get('read')
             })
             response_object['message'] = 'Book added!' # append ['message'] to response_object
-        else:
-            response_object['status'] = 'fail'
-            response_object['message'] = 'Book already in list.'
     else:
         response_object['books'] = BOOKS # append ['books'] to response_object
     return jsonify(response_object)
@@ -111,6 +112,27 @@ def remove_book(book_id):
             BOOKS.remove(book)
             return True
     return False
+
+def check_fields(post_data):
+    '''
+    Check fields and submitted.
+    '''
+    response_object = {'status': 'fail'}
+
+    # check if all fields exists
+    if post_data.keys() != KEYS.keys(): 
+        response_object['message'] = 'Missing fields.'
+        return response_object
+    # check if fields are empty or incorrect
+    elif len(post_data.get('title')) == 0 or len(post_data.get('author')) == 0: # or post_data.get('read') not in (TF.keys() or TF.values()):
+        response_object['message'] = 'Incorrect values.'
+        return response_object
+    # check if book title already exists in list
+    elif len([book for book in BOOKS if book['title'] == post_data.get('title')]) != 0:
+        response_object['message'] = 'Book already in list.'
+    else:
+        response_object['status'] = 'success'
+    return response_object
 
 if __name__ == '__main__':
     app.run()
