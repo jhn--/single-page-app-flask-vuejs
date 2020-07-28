@@ -53,14 +53,19 @@ def all_books():
     '''
     TODO:
         What if the title already exists? (done)
-        Or what if a title has more than one author? 
+        Or what if a title has more than one author? (do i create a ... list?)
         Check your understanding by handling these cases. 
         Also, how would you handle an invalid payload where the title, 
-        author, and/or read is missing?
+        author, and/or read is missing? (done)
     '''
     response_object = {'status': 'success'}
     if request.method == 'POST':
         post_data = request.get_json()
+        if not post_data.get('title') or not post_data.get('author') or not post_data.get('read'):
+            response_object['status'] = 'fail'
+            response_object['message'] = 'Missing fields.'
+
+            return jsonify(response_object)
         if len([book for book in BOOKS if book['title'] == post_data.get('title')]) == 0:
             # if there's no such book title in the list
             BOOKS.append({
