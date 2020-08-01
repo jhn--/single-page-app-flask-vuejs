@@ -27,22 +27,22 @@ BOOKS = [
         'id': uuid.uuid4().hex,
         'title': 'On the Road',
         'author': 'Jack Kerouac',
-        'read': "true"
-        # 'read': True
+        # 'read': "true"
+        'read': True
     },
     {
         'id': uuid.uuid4().hex,
         'title': 'Harry Potther and the Philosopher\'s Stone',
         'author': 'J. K. Rowling',
-        'read': "false"
-        # 'read': False
+        # 'read': "false"
+        'read': False
     },
     {
         'id': uuid.uuid4().hex,
         'title': 'Green Eggs and Ham',
         'author': 'Dr. Seuss',
-        'read': "true"
-        # 'read': True
+        # 'read': "true"
+        'read': True
     }
 ]
 
@@ -103,15 +103,16 @@ def single_book(book_id):
 
 def remove_book(book_id):
     '''
-    Take a moment to think about how you would handle the case of an id not existing. 
-    What if the payload is not correct? 
-    Refactor the for loop in the helper as well so that it's more Pythonic.
+    Take a moment to think about how you would handle the case of an id not existing. (done)
+    What if the payload is not correct?  (idk what this means.)
+    Refactor the for loop in the helper as well so that it's more Pythonic. (idk if this is more pythonic)
     '''
-    for book in BOOKS:
-        if book['id'] == book_id:
-            BOOKS.remove(book)
-            return True
-    return False
+    try:
+        BOOKS.remove([book for book in BOOKS if book['id'] == book_id][0])
+    except Exception as e:
+        return False # if the book doesn't exist, [0] will not exist and will raise a "IndexError: list index out of range" error. Simplify everything down to a False.
+    else:
+        return True
 
 def check_fields(post_data):
     '''
